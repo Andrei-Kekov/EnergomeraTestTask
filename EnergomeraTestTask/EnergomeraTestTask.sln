@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnergomeraTestTask", "EnergomeraTestTask\EnergomeraTestTask.csproj", "{3294460D-DA75-4425-82AF-76CB5A59C12C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3294460D-DA75-4425-82AF-76CB5A59C12C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3294460D-DA75-4425-82AF-76CB5A59C12C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3294460D-DA75-4425-82AF-76CB5A59C12C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3294460D-DA75-4425-82AF-76CB5A59C12C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED201601-769F-4F81-8684-F85F4B59AD98}
+	EndGlobalSection
+EndGlobal
