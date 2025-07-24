@@ -8,7 +8,6 @@ namespace EnergomeraTestTask.Services
     public class FieldService
     {
         private readonly List<Field> _fields;
-        private readonly KmlReader _reader = new KmlReader();
         private readonly Ntsg.GeometryFactory _geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory();
 
         public FieldService(KmlReader reader)
@@ -20,14 +19,14 @@ namespace EnergomeraTestTask.Services
 
         public double? GetSize(long fieldId) => _fields.FirstOrDefault(f => f.Id == fieldId)?.Size;
 
-        public double? DistanceFromCenter(long fieldId, Point point)
+        public double? DistanceFromCenter(long fieldId, OBSOLETE_Point point)
         {
             if (point is null)
             {
                 return null;
             }
 
-            Point? center = _fields.FirstOrDefault(f => f.Id == fieldId)?.Location?.Center;
+            OBSOLETE_Point? center = _fields.FirstOrDefault(f => f.Id == fieldId)?.Locations?.OBSOLETE_Center;
 
             if (center is null)
             {
@@ -40,7 +39,7 @@ namespace EnergomeraTestTask.Services
             return Math.Sqrt(x * x + y * y);
         }
 
-        public Field? GetFieldByPoint(Point point)
+        public Field? GetFieldByPoint(OBSOLETE_Point point)
         {
             if (point is null)
             {
@@ -50,14 +49,14 @@ namespace EnergomeraTestTask.Services
             return _fields.FirstOrDefault(f => PointIsInField(point, f));
         }
 
-        private bool PointIsInField(Point point, Field field)
+        private bool PointIsInField(OBSOLETE_Point point, Field field)
         {
-            if (field?.Location?.Polygon is null || field.Location.Polygon.Count < 3)
+            if (field?.Locations?.OBSOLETE_Polygon is null || field.Locations.OBSOLETE_Polygon.Count < 3)
             {
                 return false;
             }
 
-            var coords = field.Location.Polygon.Select(p => new Ntsg.Coordinate(p.Longitude, p.Latitude)).ToArray();
+            var coords = field.Locations.OBSOLETE_Polygon.Select(p => new Ntsg.Coordinate(p.Longitude, p.Latitude)).ToArray();
             var polygon = _geometryFactory.CreatePolygon(coords);
             var ntsgPoint = _geometryFactory.CreatePoint(new Ntsg.Coordinate(point.Longitude, point.Latitude));
             return polygon.Contains(ntsgPoint);

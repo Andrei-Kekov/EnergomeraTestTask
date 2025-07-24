@@ -1,4 +1,5 @@
 ﻿using EnergomeraTestTask.Models;
+using NetTopologySuite.Geometries;
 using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
@@ -10,6 +11,10 @@ namespace EnergomeraTestTask.Data
         public string FieldsFilePath { get; set; } = "Data\\fields.kml";
 
         public string CentroidsFilePath { get; set; } = "Data\\centroids.kml";
+
+        private readonly GeometryFactory _geometryFactory = new GeometryFactory();
+
+        private readonly CoordinateParser _coordParser = new CoordinateParser();
 
         public List<Field> GetFields()
         {
@@ -38,8 +43,8 @@ namespace EnergomeraTestTask.Data
                 field.Id = long.TryParse(placemarks.Current!.SelectSingleNode(".//kml:SimpleData[@name='fid']", resolver)?.Value, out id) ? id : null;
                 field.Size = float.TryParse(placemarks.Current!.SelectSingleNode(".//kml:SimpleData[@name='size']", resolver)?.Value, CultureInfo.InvariantCulture, out size) ? size : null;
                 polygonString = placemarks.Current!.SelectSingleNode("./kml:Polygon//kml:coordinates", resolver)?.Value;
-                field.Location = new Location();
-                field.Location.Polygon = GetPointsFromString(polygonString);
+                field.Locations = new Locations();
+                field.Locations.Polygon = ParsePolygon(polygonString);
                 fields.Add(field);
             }
 
@@ -48,23 +53,23 @@ namespace EnergomeraTestTask.Data
             return fields;
         }
 
-        private List<Point> GetPointsFromString(string? polygonString)
+        private Polygon? ParsePolygon(string? polygonString)
         {
-            var points = new List<Point>();
-
-            if (string.IsNullOrEmpty(polygonString))
+            if (string.IsNullOrEmpty (polygonString))
             {
-                return points;
+                return null;
             }
 
-            string[] coordPairs = polygonString.Split(separator: ' ', options: StringSplitOptions.RemoveEmptyEntries);
+            var coordStrings = polygonString.Split(separator: ' ', options: StringSplitOptions.RemoveEmptyEntries);
 
-            foreach (string coordPair in coordPairs)
+            if (coordStrings.Length < 3)
             {
-                points.Add(new Point(coordPair));
+                throw new ArgumentException($"Invalid polygon: '{polygonString}'. A polygon must have at least 3 vertices.");
             }
 
-            return points;
+            var vertices = new Coordinate[coordStrings.Length];
+            vertices = coordStrings.Select(s => _coordParser.Parse(s)).ToArray();
+            return _geometryFactory.CreatePolygon(vertices);
         }
 
         private void LoadCenters(List<Field> fields)
@@ -74,7 +79,7 @@ namespace EnergomeraTestTask.Data
             var resolver = new XmlNamespaceManager(navigator.NameTable);
             resolver.AddNamespace("kml", "http://www.opengis.net/kml/2.2");
             var placemarks = navigator.Select("//kml:Folder[kml:name='centroids']/kml:Placemark", resolver);
-            string? centerCoordPair;
+            string? coordString;
             Field? field;
             long id;
 
@@ -85,9 +90,9 @@ namespace EnergomeraTestTask.Data
                     continue;
                 }
 
-                centerCoordPair = placemarks.Current!.SelectSingleNode("./kml:Point/kml:coordinates", resolver)?.Value;
+                coordString = placemarks.Current!.SelectSingleNode("./kml:Point/kml:coordinates", resolver)?.Value;
 
-                if (centerCoordPair is null)
+                if (coordString is null)
                 {
                     continue;
                 }
@@ -99,7 +104,7 @@ namespace EnergomeraTestTask.Data
                     continue;
                 }
 
-                field.Location!.Center = new Point(centerCoordPair);
+                field.Locations!.Center = _coordParser.Parse(coordString);
             }
         }
     }

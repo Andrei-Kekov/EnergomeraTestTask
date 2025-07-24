@@ -1,7 +1,7 @@
+using EnergomeraTestTask.Dtos;
 using EnergomeraTestTask.Models;
 using EnergomeraTestTask.Services;
 using Microsoft.AspNetCore.Mvc;
-using NetTopologySuite.IO;
 
 namespace EnergomeraTestTask.Controllers
 {
@@ -20,7 +20,7 @@ namespace EnergomeraTestTask.Controllers
 
         [HttpGet]
         [Route("GetFields")]
-        public IEnumerable<Field> GetFields() => _fieldService.GetFields();
+        public IEnumerable<FieldDto> GetFields() => _fieldService.GetFields().Select(f => new FieldDto(f));
 
         [HttpPost]
         [Route("GetSize")]
@@ -32,7 +32,7 @@ namespace EnergomeraTestTask.Controllers
 
         [HttpPost]
         [Route("DistanceFromCenter")]
-        public ActionResult<double> DistanceFromCenter(long fieldId, Point point)
+        public ActionResult<double> DistanceFromCenter(long fieldId, OBSOLETE_Point point)
         {
             double? distance = _fieldService.DistanceFromCenter(fieldId, point);
             return distance.HasValue ? distance : NotFound();
@@ -40,7 +40,7 @@ namespace EnergomeraTestTask.Controllers
 
         [HttpPost]
         [Route("GetFieldByPoint")]
-        public ActionResult<object> GetFieldByPoint(Point point)
+        public ActionResult<object> GetFieldByPoint(OBSOLETE_Point point)
         {
             Field? field = _fieldService.GetFieldByPoint(point);
 
