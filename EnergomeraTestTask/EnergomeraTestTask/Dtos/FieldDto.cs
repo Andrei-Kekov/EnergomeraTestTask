@@ -17,21 +17,9 @@ namespace EnergomeraTestTask.Dtos
             Name = field.Name;
             Size= field.Size;
 
-            if (field.Locations is null)
+            if (field.Locations is not null)
             {
-                return;
-            }
-
-            Locations = new LocationsDto();
-
-            if (field.Locations.Center is not null)
-            {
-                Locations.Center = [field.Locations.Center.X, field.Locations.Center.Y];
-            }
-
-            if (field.Locations.Polygon is not null)
-            {
-                Locations.Polygon = field.Locations.Polygon.Coordinates.Select(c => new double[] { c.X, c.Y }).ToArray();
+                Locations = new LocationsDto(field.Locations);
             }
         }
 

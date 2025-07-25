@@ -8,7 +8,6 @@
 
         public float? Size { get; set; }
 
-        // remove?
         public Locations? Locations { get; set; }
     }
 }

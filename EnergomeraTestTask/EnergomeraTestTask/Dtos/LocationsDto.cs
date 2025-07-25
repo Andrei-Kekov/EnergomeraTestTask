@@ -1,13 +1,31 @@
-﻿using System.Text.Json.Serialization;
+﻿using EnergomeraTestTask.Models;
 
 namespace EnergomeraTestTask.Dtos
 {
     public class LocationsDto
     {
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public double[]? Center { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public double[][]? Polygon { get; set; }
+
+        public LocationsDto() { }
+
+        public LocationsDto(Locations locations)
+        {
+            if (locations is null)
+            {
+                throw new ArgumentNullException(nameof(locations));
+            }
+
+            if (locations.Center is not null)
+            {
+                Center = [locations.Center.Latitude.ToDouble(), locations.Center.Longitude.ToDouble()];
+            }
+
+            if (locations.Polygon is not null)
+            {
+                Polygon = locations.Polygon.Points.Select(p => new double[] { p.Latitude, p.Longitude }).ToArray();
+            }
+        }
     }
 }

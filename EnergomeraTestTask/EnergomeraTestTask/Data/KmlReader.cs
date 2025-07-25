@@ -1,5 +1,5 @@
-﻿using EnergomeraTestTask.Models;
-using NetTopologySuite.Geometries;
+﻿using CoordinateSharp;
+using EnergomeraTestTask.Models;
 using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
@@ -11,8 +11,6 @@ namespace EnergomeraTestTask.Data
         public string FieldsFilePath { get; set; } = "Data\\fields.kml";
 
         public string CentroidsFilePath { get; set; } = "Data\\centroids.kml";
-
-        private readonly GeometryFactory _geometryFactory = new GeometryFactory();
 
         private readonly CoordinateParser _coordParser = new CoordinateParser();
 
@@ -53,7 +51,7 @@ namespace EnergomeraTestTask.Data
             return fields;
         }
 
-        private Polygon? ParsePolygon(string? polygonString)
+        private GeoFence? ParsePolygon(string? polygonString)
         {
             if (string.IsNullOrEmpty (polygonString))
             {
@@ -67,9 +65,8 @@ namespace EnergomeraTestTask.Data
                 throw new ArgumentException($"Invalid polygon: '{polygonString}'. A polygon must have at least 3 vertices.");
             }
 
-            var vertices = new Coordinate[coordStrings.Length];
-            vertices = coordStrings.Select(s => _coordParser.Parse(s)).ToArray();
-            return _geometryFactory.CreatePolygon(vertices);
+            var vertices = coordStrings.Select(s => _coordParser.Parse(s)).ToList();
+            return new GeoFence(vertices);
         }
 
         private void LoadCenters(List<Field> fields)

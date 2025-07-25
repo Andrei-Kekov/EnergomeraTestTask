@@ -1,3 +1,4 @@
+using CoordinateSharp;
 using EnergomeraTestTask.Dtos;
 using EnergomeraTestTask.Models;
 using EnergomeraTestTask.Services;
@@ -32,17 +33,19 @@ namespace EnergomeraTestTask.Controllers
 
         [HttpPost]
         [Route("DistanceFromCenter")]
-        public ActionResult<double> DistanceFromCenter(long fieldId, OBSOLETE_Point point)
+        public ActionResult<double> DistanceFromCenter(long fieldId, PointDto point)
         {
-            double? distance = _fieldService.DistanceFromCenter(fieldId, point);
+            var coord = new Coordinate(point.Latitude, point.Longitude);
+            double? distance = _fieldService.MetersFromCenter(fieldId, coord);
             return distance.HasValue ? distance : NotFound();
         }
 
         [HttpPost]
         [Route("GetFieldByPoint")]
-        public ActionResult<object> GetFieldByPoint(OBSOLETE_Point point)
+        public ActionResult<object> GetFieldByPoint(PointDto point)
         {
-            Field? field = _fieldService.GetFieldByPoint(point);
+            var coord = new Coordinate(point.Latitude, point.Longitude);
+            Field? field = _fieldService.GetFieldByPoint(coord);
 
             if (field is null)
             {
